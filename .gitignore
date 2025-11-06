@@ -74,6 +74,12 @@ app.*.map.json
 # Coverage
 coverage/
 
+# Large model files (should use Git LFS or external storage)
+*.keras
+*.h5
+*.pth
+*.ckpt
+
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
 !**/ios/**/default.mode2v3
