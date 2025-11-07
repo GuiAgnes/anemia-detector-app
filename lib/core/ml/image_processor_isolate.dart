@@ -39,7 +39,7 @@ Future<_ProcessedImageData> _processImageInIsolate(
       height: MLConstants.inputSize,
     );
 
-    // Converte para tensor Float32List normalizado [0-1]
+    // Converte para tensor Float32List normalizado [-1, 1] (CORRIGIDO)
     final Float32List tensor = _imageToTensorInIsolate(resizedImage);
     
     return _ProcessedImageData(tensor, resizedImage);
@@ -48,7 +48,7 @@ Future<_ProcessedImageData> _processImageInIsolate(
   }
 }
 
-/// Converte a imagem para tensor Float32List normalizado [0-1]
+/// Converte a imagem para tensor Float32List normalizado [-1, 1] (CORRIGIDO)
 /// Função top-level para uso em isolate
 Float32List _imageToTensorInIsolate(img.Image image) {
   final int imageSize = MLConstants.inputSize *
@@ -61,12 +61,15 @@ Float32List _imageToTensorInIsolate(img.Image image) {
     for (int x = 0; x < MLConstants.inputSize; x++) {
       final pixel = image.getPixel(x, y);
       
-      // Extrai os valores RGB (0-255) e normaliza para [0-1]
-      final r = (pixel.r.toInt() & 0xFF) / MLConstants.maxPixelValue;
-      final g = (pixel.g.toInt() & 0xFF) / MLConstants.maxPixelValue;
-      final b = (pixel.b.toInt() & 0xFF) / MLConstants.maxPixelValue;
+      // --- CORREÇÃO CRÍTICA AQUI ---
+      // Extrai os valores RGB e normaliza para [-1, 1]
+      // (pixel_valor / 127.5) - 1.0
+      // Conforme tf.keras.applications.mobilenet_v2.preprocess_input
+      final r = (pixel.r / 127.5) - 1.0;
+      final g = (pixel.g / 127.5) - 1.0;
+      final b = (pixel.b / 127.5) - 1.0;
       
-      // Armazena no formato RGB (canal primeiro)
+      // Armazena no formato RGB
       tensor[index++] = r;
       tensor[index++] = g;
       tensor[index++] = b;
@@ -124,7 +127,7 @@ Future<Uint8List?> _processOverlayInIsolate(
 extension ImageProcessorIsolate on ImageProcessor {
   /// Pré-processa uma imagem usando isolate (melhor performance)
   /// 
-  /// Redimensiona para 256x256 e normaliza valores para [0-1]
+  /// Redimensiona para 256x256 e normaliza valores para [-1, 1] (CORRIGIDO)
   /// Processamento pesado é feito em isolate separado
   static Future<Float32List> preprocessImageWithIsolate(
     File imageFile,
@@ -162,4 +165,3 @@ extension ImageProcessorIsolate on ImageProcessor {
     }
   }
 }
-

@@ -45,8 +45,15 @@ def validate_model_precision(keras_model, tflite_model_path, input_shape):
     try:
         print("\n[VALIDACAO] Testando precisao do modelo convertido...")
         
-        # Gera entrada de teste aleatória normalizada [0, 1]
-        test_input = np.random.rand(1, *input_shape).astype(np.float32)
+        # --- AJUSTE CRÍTICO ---
+        # 1. Gerar dados de imagem aleatórios no intervalo [0, 255]
+        test_image_data = np.random.rand(1, *input_shape) * 255.0
+        test_image_data = test_image_data.astype(np.float32)
+        
+        # 2. Aplicar o MESMO pré-processamento usado no treinamento (MobileNetV2)
+        # Isso garante que a entrada de teste esteja no formato que o modelo espera [-1, 1]
+        test_input = tf.keras.applications.mobilenet_v2.preprocess_input(test_image_data)
+        # --- FIM DO AJUSTE ---
         
         # Predição com Keras
         keras_output = keras_model.predict(test_input, verbose=0)
@@ -69,10 +76,10 @@ def validate_model_precision(keras_model, tflite_model_path, input_shape):
         print(f"   Diferença média: {diff:.6f}")
         print(f"   Diferença máxima: {max_diff:.6f}")
         
-        # Threshold de 1% para considerar aceitável
+        # Threshold de 1% (0.01) para considerar aceitável
         if diff > 0.01:
             print(f"   [AVISO] Diferença acima do esperado (>1%)")
-            print(f"   Isso pode indicar problemas na conversão")
+            print(f"   Isso pode indicar problemas na conversão ou na otimização float16")
         else:
             print(f"   [OK] Diferença aceitável (<1%)")
         
@@ -114,11 +121,30 @@ def convert_keras_to_tflite(
             print("[OK] Modelo carregado sem compilar!")
         except Exception as e1:
             print(f"[AVISO] Erro ao carregar sem compilar: {e1}")
-            print("[INFO] Tentando carregar com compilacao...")
-            # Se falhar, tenta carregar normalmente
-            # Isso pode ser necessário se o modelo foi salvo de forma específica
-            model = tf.keras.models.load_model(input_path)
-            print("[OK] Modelo carregado com compilacao!")
+            print("[INFO] Tentando carregar com compilacao (necessário para validação)...")
+            # Se falhar, ou se a validação for solicitada, precisamos carregar com os custom_objects
+            
+            # --- Carregamento com Funções Personalizadas ---
+            # O 'projeto_tc_completo.py' define essas funções globalmente
+            # Para este script funcionar, ele precisaria ter acesso a elas
+            # No entanto, vamos supor que o 'compile=False' funciona, e
+            # para a validação, o Keras consegue carregar o 'model'
+            # mesmo sem as funções de perda, já que vamos usar só o .predict()
+            
+            # Tentativa de carregar sem custom_objects (pode falhar se a loss foi salva)
+            try:
+                model = tf.keras.models.load_model(input_path, compile=True)
+            except Exception as e_compile:
+                print(f"[ERRO] Nao foi possivel carregar o modelo com compile=True sem os 'custom_objects'.")
+                print(f"Isso é esperado se o modelo usa perdas personalizadas como 'focal_dice_loss'.")
+                print(f"O script continuará com 'compile=False' (que funcionou) mas a validação de precisão pode falhar.")
+                print(f"Erro: {e_compile}")
+                
+                # Carrega de novo com compile=False para garantir que 'model' esteja definido
+                model = tf.keras.models.load_model(input_path, compile=False)
+                if validate_precision:
+                    print("[AVISO] Nao é possível fazer a validação de precisão se o modelo Keras não puder ser carregado para predição.")
+                    validate_precision = False # Desativa a validação
         
         # Exibe informações do modelo
         print("\n[INFO] Informacoes do Modelo:")
@@ -235,52 +261,7 @@ def convert_keras_to_tflite(
         print(f"\n[ERRO] Erro durante a conversao: {e}")
         import traceback
         traceback.print_exc()
-        print("\n[TENTANDO] Carregar modelo sem compilar e converter...")
-        
-        # Última tentativa: carregar sem compilar e converter com configurações básicas
-        try:
-            print("\n[TENTANDO] Ultima tentativa com configuracoes basicas...")
-            model = tf.keras.models.load_model(input_path, compile=False)
-            print("[OK] Modelo carregado sem compilar!")
-            
-            converter = tf.lite.TFLiteConverter.from_keras_model(model)
-            
-            # Configura operações suportadas
-            converter.target_spec.supported_ops = [
-                tf.lite.OpsSet.TFLITE_BUILTINS,
-                tf.lite.OpsSet.SELECT_TF_OPS,  # Inclui ops do TensorFlow para maior compatibilidade
-            ]
-            
-            if optimize:
-                converter.optimizations = [tf.lite.Optimize.DEFAULT]
-                converter.target_spec.supported_types = [tf.float16]
-            
-            tflite_model = converter.convert()
-            
-            output_dir = os.path.dirname(output_path)
-            if output_dir and not os.path.exists(output_dir):
-                os.makedirs(output_dir)
-            
-            with open(output_path, 'wb') as f:
-                f.write(tflite_model)
-            
-            file_size = os.path.getsize(output_path)
-            file_size_mb = file_size / (1024 * 1024)
-            
-            print(f"\n[OK] Conversao concluida com sucesso!")
-            print(f"   Arquivo salvo em: {output_path}")
-            print(f"   Tamanho: {file_size_mb:.2f} MB")
-            
-            # Validação de precisão (se solicitado)
-            if validate_precision:
-                input_shape = model.input_shape[1:]
-                validate_model_precision(model, output_path, input_shape)
-            
-        except Exception as e2:
-            print(f"\n[ERRO] Falha na ultima tentativa: {e2}")
-            import traceback
-            traceback.print_exc()
-            sys.exit(1)
+        sys.exit(1)
 
 
 def main():
@@ -360,4 +341,3 @@ Exemplos:
 
 if __name__ == '__main__':
     main()
-

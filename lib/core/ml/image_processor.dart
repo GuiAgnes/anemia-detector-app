@@ -17,7 +17,7 @@ class InsufficientSegmentationException extends MLException {
 class ImageProcessor {
   /// Pré-processa uma imagem para o modelo TFLite
   /// 
-  /// Redimensiona para 256x256 e normaliza valores para [0-1]
+  /// Redimensiona para 256x256 e normaliza valores para [-1, 1] (CORRIGIDO)
   static Future<Float32List> preprocessImage(File imageFile) async {
     try {
       // Lê o arquivo como bytes
@@ -39,7 +39,7 @@ class ImageProcessor {
         height: MLConstants.inputSize,
       );
 
-      // Converte para tensor Float32List normalizado [0-1]
+      // Converte para tensor Float32List normalizado [-1, 1]
       return _imageToTensor(resizedImage);
     } catch (e) {
       if (e is MLException) rethrow;
@@ -50,7 +50,7 @@ class ImageProcessor {
     }
   }
 
-  /// Converte a imagem para tensor Float32List normalizado [0-1]
+  /// Converte a imagem para tensor Float32List normalizado [-1, 1] (CORRIGIDO)
   /// Shape: [1, 256, 256, 3]
   static Float32List _imageToTensor(img.Image image) {
     final int imageSize = MLConstants.inputSize *
@@ -63,12 +63,15 @@ class ImageProcessor {
       for (int x = 0; x < MLConstants.inputSize; x++) {
         final pixel = image.getPixel(x, y);
         
-        // Extrai os valores RGB (0-255) e normaliza para [0-1]
-        final r = (pixel.r.toInt() & 0xFF) / MLConstants.maxPixelValue;
-        final g = (pixel.g.toInt() & 0xFF) / MLConstants.maxPixelValue;
-        final b = (pixel.b.toInt() & 0xFF) / MLConstants.maxPixelValue;
+        // --- CORREÇÃO CRÍTICA AQUI ---
+        // Extrai os valores RGB e normaliza para [-1, 1]
+        // (pixel_valor / 127.5) - 1.0
+        // Conforme tf.keras.applications.mobilenet_v2.preprocess_input
+        final r = (pixel.r / 127.5) - 1.0;
+        final g = (pixel.g / 127.5) - 1.0;
+        final b = (pixel.b / 127.5) - 1.0;
         
-        // Armazena no formato RGB (canal primeiro)
+        // Armazena no formato RGB
         tensor[index++] = r;
         tensor[index++] = g;
         tensor[index++] = b;
@@ -155,17 +158,15 @@ class ImageProcessor {
     debugPrint('   Threshold usado: ${MLConstants.segmentationThreshold}');
     
     // Segunda passagem: aplica threshold adaptativo se necessário
-    // Se a média dos valores for muito baixa, pode ser que o threshold esteja muito alto
     double effectiveThreshold = MLConstants.segmentationThreshold;
     
-    // Se a média for muito baixa (< 0.3), o modelo pode estar produzindo valores em escala diferente
-    // Neste caso, usa um threshold mais baixo baseado na distribuição dos valores
-    if (meanValue < 0.3 && maxValue < 0.5) {
-      // Usa threshold adaptativo baseado na média + desvio padrão aproximado
-      effectiveThreshold = (meanValue + (maxValue - meanValue) * 0.5).clamp(0.0, 1.0);
-      debugPrint('   [AVISO] Threshold adaptativo aplicado: ${effectiveThreshold.toStringAsFixed(4)}');
-      debugPrint('   [AVISO] Valores da máscara parecem estar em escala diferente do esperado');
-    }
+    // (A lógica de threshold adaptativo foi removida pois, com a normalização
+    // correta da entrada, o threshold fixo deve funcionar de forma confiável)
+    // if (meanValue < 0.3 && maxValue < 0.5) {
+    //   effectiveThreshold = (meanValue + (maxValue - meanValue) * 0.5).clamp(0.0, 1.0);
+    //   debugPrint('   [AVISO] Threshold adaptativo aplicado: ${effectiveThreshold.toStringAsFixed(4)}');
+    //   debugPrint('   [AVISO] Valores da máscara parecem estar em escala diferente do esperado');
+    // }
     
     // Aplica threshold e binariza
     for (int y = 0; y < MLConstants.inputSize; y++) {
@@ -190,9 +191,6 @@ class ImageProcessor {
     debugPrint('[ImageProcessor] Threshold efetivo usado: ${effectiveThreshold.toStringAsFixed(4)}');
     
     // Valida se a cobertura é suficiente
-    // Apenas rejeita se a cobertura for muito pequena (praticamente zero)
-    // Se a cobertura for 0% (nenhum pixel detectado), rejeita
-    // Caso contrário, aceita mesmo valores baixos para permitir segmentações parciais
     if (coverage == 0.0 || (coverage < MLConstants.minCoveragePercentage && pixelCount < 100)) {
       debugPrint('[ImageProcessor] Segmentação rejeitada: cobertura muito baixa ou nenhuma área detectada');
       debugPrint('[ImageProcessor] Dica: Verifique se o threshold (${MLConstants.segmentationThreshold}) está adequado');
@@ -229,4 +227,3 @@ class SegmentationStatistics {
     required this.totalPixels,
   });
 }
-
