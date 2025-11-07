@@ -41,10 +41,6 @@ class PhotoGalleryPage extends StatelessWidget {
                       // Exemplos de fotos
                       _buildExamplesSection(),
                       
-                      const SizedBox(height: 32),
-                      
-                      // Dicas importantes
-                      _buildTipsSection(),
                     ],
                   ),
                 ),
@@ -242,14 +238,8 @@ class PhotoGalleryPage extends StatelessWidget {
         // Exemplo 1
         _buildExampleCard(
           imagePath: 'assets/images/examples/01_4.jpg',
-          title: 'Exemplo 1: Ovelha - Conjuntiva Exposta',
-          description: 'Pálpebra inferior puxada para baixo, expondo a conjuntiva rosa saudável. Foco nítido na área da mucosa. A mão segura suavemente a pálpebra, revelando a membrana mucosa bem vascularizada.',
-          tips: [
-            'Segure a pálpebra suavemente com o polegar',
-            'Mantenha o foco nítido na conjuntiva',
-            'Boa iluminação natural sem sombras',
-            'A conjuntiva deve estar claramente visível',
-          ],
+          title: 'Exemplo 1: Conjuntiva Bem Exposta',
+          description: 'A pálpebra inferior é puxada levemente e revela a mucosa rosa, iluminada e em foco. A mão apenas apoia o movimento sem cobrir a área importante.',
         ),
         
         const SizedBox(height: 16),
@@ -257,14 +247,8 @@ class PhotoGalleryPage extends StatelessWidget {
         // Exemplo 2
         _buildExampleCard(
           imagePath: 'assets/images/examples/02_3.jpg',
-          title: 'Exemplo 2: Close-up da Conjuntiva',
-          description: 'Visão próxima da conjuntiva, mostrando detalhes da vascularização. Área bem iluminada e em foco. A conjuntiva aparece em tom rosa vibrante, indicando boa saúde.',
-          tips: [
-            'Exponha claramente a conjuntiva',
-            'Evite sombras na área da mucosa',
-            'Mantenha a câmera estável',
-            'Use duas mãos se necessário para estabilizar',
-          ],
+          title: 'Exemplo 2: Close-up Nítido',
+          description: 'A câmera está próxima o bastante para mostrar detalhes dos vasos, mas ainda mantém toda a mucosa visível. A iluminação uniforme realça a cor.',
         ),
         
         const SizedBox(height: 16),
@@ -272,14 +256,8 @@ class PhotoGalleryPage extends StatelessWidget {
         // Exemplo 3
         _buildExampleCard(
           imagePath: 'assets/images/examples/04_2.jpg',
-          title: 'Exemplo 3: Posicionamento Correto',
-          description: 'Mãos posicionadas corretamente para expor a conjuntiva. A pálpebra superior e inferior são puxadas adequadamente, revelando a membrana mucosa com boa iluminação.',
-          tips: [
-            'Polegar na pálpebra superior (opcional)',
-            'Dedo indicador na pálpebra inferior',
-            'Puxe suavemente sem pressionar demais',
-            'Exponha a maior área possível da conjuntiva',
-          ],
+          title: 'Exemplo 3: Mãos Bem Posicionadas',
+          description: 'Uma mão estabiliza a cabeça e a outra expõe o olho com movimentos suaves. A conjuntiva aparece inteira e com boa luz.',
         ),
         
         const SizedBox(height: 16),
@@ -287,14 +265,8 @@ class PhotoGalleryPage extends StatelessWidget {
         // Exemplo 4
         _buildExampleCard(
           imagePath: 'assets/images/examples/07_9.jpg',
-          title: 'Exemplo 4: Boa Iluminação',
-          description: 'Foto com iluminação clara e uniforme, destacando a cor e textura da conjuntiva. Sem sombras que obscureçam os detalhes. A conjuntiva está bem exposta e visível.',
-          tips: [
-            'Use luz natural quando possível',
-            'Evite sombras duras',
-            'Iluminação uniforme na área',
-            'A cor da conjuntiva deve ser claramente visível',
-          ],
+          title: 'Exemplo 4: Luz Uniforme',
+          description: 'A iluminação ilumina toda a conjuntiva, realçando cor e textura. Não há sombras ou brilhos fortes que prejudiquem a leitura.',
         ),
         
         const SizedBox(height: 16),
@@ -302,14 +274,8 @@ class PhotoGalleryPage extends StatelessWidget {
         // Exemplo 5
         _buildExampleCard(
           imagePath: 'assets/images/examples/IMG-20251017-WA0012.jpg',
-          title: 'Exemplo 5: Exposição Completa',
-          description: 'Exemplo de como expor adequadamente a conjuntiva ocular. A pálpebra está puxada de forma que a membrana mucosa fique completamente visível, facilitando a análise pelo modelo de IA.',
-          tips: [
-            'Aproxime-se o suficiente para ver detalhes',
-            'Mantenha o foco nítido na área',
-            'Evite tremidas - use apoio se necessário',
-            'A conjuntiva deve preencher a maior parte do quadro',
-          ],
+          title: 'Exemplo 5: Enquadramento Completo',
+          description: 'A mucosa ocupa quase todo o quadro, sem cortes ou áreas escuras. O foco está cravado na região que o modelo precisa analisar.',
         ),
       ],
     );
@@ -320,7 +286,6 @@ class PhotoGalleryPage extends StatelessWidget {
     String? imagePath,
     required String title,
     required String description,
-    required List<String> tips,
   }) {
     return AnimatedCard(
       delay: const Duration(milliseconds: 200),
@@ -383,66 +348,7 @@ class PhotoGalleryPage extends StatelessWidget {
                 height: 1.5,
               ),
             ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle_outline,
-                        size: 16,
-                        color: AppTheme.accentColor,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Pontos importantes:',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ...tips.map((tip) => Padding(
-                    padding: const EdgeInsets.only(left: 24, top: 4),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 6),
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: AppTheme.accentColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            tip,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[700],
-                              height: 1.4,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )).toList(),
-                ],
-              ),
-            ),
+            const SizedBox(height: 4),
           ],
         ),
       ),
@@ -509,124 +415,5 @@ class PhotoGalleryPage extends StatelessWidget {
     );
   }
 
-  /// Seção de dicas
-  Widget _buildTipsSection() {
-    return AnimatedCard(
-      delay: const Duration(milliseconds: 300),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppTheme.primaryColor.withOpacity(0.1),
-              AppTheme.secondaryColor.withOpacity(0.1),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.lightbulb,
-                  color: AppTheme.warningColor,
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Dicas Importantes',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[900],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildTipItem(
-              Icons.wb_sunny,
-              'Iluminação',
-              'Use luz natural ou artificial clara. Evite sombras na área da conjuntiva.',
-            ),
-            const SizedBox(height: 12),
-            _buildTipItem(
-              Icons.center_focus_strong,
-              'Foco',
-              'Mantenha o foco nítido na área da conjuntiva. Use o retângulo de guia do app.',
-            ),
-            const SizedBox(height: 12),
-            _buildTipItem(
-              Icons.handshake,
-              'Posicionamento',
-              'Segure a pálpebra suavemente, sem pressionar demais. Exponha claramente a mucosa.',
-            ),
-            const SizedBox(height: 12),
-            _buildTipItem(
-              Icons.camera_alt,
-              'Distância',
-              'Mantenha uma distância adequada: nem muito longe (perde detalhes) nem muito perto (perde contexto).',
-            ),
-            const SizedBox(height: 12),
-            _buildTipItem(
-              Icons.visibility,
-              'Área de Interesse',
-              'A foto deve mostrar claramente a conjuntiva (membrana rosa/vermelha), não apenas o olho fechado.',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Item de dica
-  Widget _buildTipItem(IconData icon, String title, String description) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.warningColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: AppTheme.warningColor,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[700],
-                  height: 1.4,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 }
 
