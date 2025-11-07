@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../anemia_detection/presentation/pages/analysis_capture_page.dart';
+import '../../../branding/presentation/pages/about_page.dart';
 import '../../data/models/animal_model.dart';
 import '../../data/repositories/analysis_repository.dart';
 import '../../data/repositories/animal_repository.dart';
@@ -81,7 +82,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
       final directory = await getTemporaryDirectory();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      final file = File(p.join(directory.path, 'rebanho_analises_$timestamp.csv'));
+      final file =
+          File(p.join(directory.path, 'rebanho_analises_$timestamp.csv'));
       await file.writeAsString(csvData);
 
       await Share.shareXFiles(
@@ -170,6 +172,13 @@ class _DashboardPageState extends State<DashboardPage> {
                   )
                 : const Icon(Icons.file_download_outlined),
             onPressed: _isExporting ? null : () => _exportCsv(context),
+          ),
+          IconButton(
+            tooltip: 'Sobre o Aplicativo',
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const AboutPage()),
+            ),
           ),
         ],
       ),
@@ -403,9 +412,8 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget _buildHeroHeader(DashboardSummary summary) {
     final total = summary.totalAnimals;
     final active = summary.withAnalyses;
-    final coverage = total == 0
-        ? 0
-        : ((summary.withAnalyses / total) * 100).round();
+    final coverage =
+        total == 0 ? 0 : ((summary.withAnalyses / total) * 100).round();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
@@ -711,7 +719,8 @@ class _DashboardPageState extends State<DashboardPage> {
                         const SizedBox(height: 4),
                         const Text(
                           'Score de anemia',
-                          style: TextStyle(fontSize: 11, color: Color(0xFF9AA0B5)),
+                          style:
+                              TextStyle(fontSize: 11, color: Color(0xFF9AA0B5)),
                         ),
                       ],
                     ),
@@ -912,4 +921,3 @@ class _DashboardActionCard extends StatelessWidget {
     );
   }
 }
-

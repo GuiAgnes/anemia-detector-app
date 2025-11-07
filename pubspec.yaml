@@ -45,5 +45,6 @@ flutter:
   
   assets:
     - assets/model.tflite
-    - assets/images/
+    - assets/images/logo_unisc.jpg
+    - assets/images/examples/
 
