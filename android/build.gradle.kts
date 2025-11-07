@@ -1,3 +1,5 @@
+import com.android.build.gradle.LibraryExtension
+
 allprojects {
     repositories {
         google()
@@ -17,6 +19,21 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+subprojects {
+    plugins.withId("com.android.library") {
+        extensions.findByType(LibraryExtension::class.java)?.let { libraryExtension ->
+            if (libraryExtension.namespace.isNullOrEmpty()) {
+                val base = (project.group?.toString().takeUnless { it.isNullOrBlank() }
+                    ?: "com.thirdparty")
+                val sanitizedName = project.name.replace(Regex("[^A-Za-z0-9]"), "").ifBlank {
+                    "library"
+                }
+                libraryExtension.namespace = "$base.$sanitizedName"
+            }
+        }
+    }
 }
 
 tasks.register<Delete>("clean") {
