@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/constants/ml_constants.dart';
 import '../../../../core/exceptions/ml_exceptions.dart';
 import '../../../../core/ml/classification_service.dart';
 import '../../../../core/ml/image_processor.dart';
@@ -324,10 +325,15 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
         overlayBytes: overlayBytes,
       );
 
+      // Usa a classificação de anemia como score, ou fallback para cobertura se não houver classificação
+      final score = _classificationResult != null
+          ? MLConstants.classificationToScore(_classificationResult!.predictedClass)
+          : _coveragePercentage!;
+
       final analysis = AnalysisModel(
         animalId: request.animalId,
         recordedAt: request.recordedAt.toUtc(),
-        score: _coveragePercentage!,
+        score: score,
         originalImagePath: savedPaths.original,
         segmentedImagePath: savedPaths.segmented,
         actionTaken: request.actionTaken,
@@ -711,12 +717,20 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        StatsCard(
-          title: 'Cobertura da Região',
-          value: '${_coveragePercentage!.toStringAsFixed(1)}%',
-          icon: Icons.analytics,
-          gradient: AppTheme.primaryGradient,
-        ),
+        if (_classificationResult != null)
+          StatsCard(
+            title: 'Classificação de Anemia',
+            value: _classificationResult!.predictedClass,
+            icon: Icons.bloodtype,
+            gradient: AppTheme.primaryGradient,
+          )
+        else
+          StatsCard(
+            title: 'Cobertura da Região',
+            value: '${_coveragePercentage!.toStringAsFixed(1)}%',
+            icon: Icons.analytics,
+            gradient: AppTheme.primaryGradient,
+          ),
         const SizedBox(height: 24),
         Container(
           decoration: BoxDecoration(

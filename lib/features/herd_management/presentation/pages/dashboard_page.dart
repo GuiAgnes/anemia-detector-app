@@ -54,6 +54,8 @@ class _DashboardPageState extends State<DashboardPage> {
           'raca',
           'data_hora',
           'score',
+          'classificacao_anemia',
+          'confianca_classificacao',
           'acao',
           'notas',
           'foto_original',
@@ -69,7 +71,11 @@ class _DashboardPageState extends State<DashboardPage> {
           animal?.name ?? animal?.nickname ?? '',
           animal?.breed ?? '',
           analysis.recordedAt.toIso8601String(),
-          analysis.score.toStringAsFixed(2),
+          analysis.anemiaClassification ?? analysis.score.toStringAsFixed(0),
+          analysis.anemiaClassification ?? '',
+          analysis.classificationConfidence != null
+              ? (analysis.classificationConfidence! * 100).toStringAsFixed(2)
+              : '',
           analysis.actionTaken ?? '',
           analysis.notes ?? '',
           analysis.originalImagePath,
@@ -605,9 +611,11 @@ class _DashboardPageState extends State<DashboardPage> {
         final formattedDate = overview.lastAnalysisDate != null
             ? DateFormat('dd/MM/yyyy').format(overview.lastAnalysisDate!)
             : 'Sem análise';
-        final scoreText = overview.score != null
-            ? '${overview.score!.toStringAsFixed(1)}%'
-            : '--';
+        final scoreText = overview.latestAnalysis?.anemiaClassification != null
+            ? overview.latestAnalysis!.anemiaClassification!
+            : overview.score != null
+                ? '${overview.score!.toStringAsFixed(0)}'
+                : '--';
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -717,10 +725,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Score de anemia',
-                          style:
-                              TextStyle(fontSize: 11, color: Color(0xFF9AA0B5)),
+                        Text(
+                          overview.latestAnalysis?.anemiaClassification ?? 'Score',
+                          style: const TextStyle(fontSize: 11, color: Color(0xFF9AA0B5)),
                         ),
                       ],
                     ),

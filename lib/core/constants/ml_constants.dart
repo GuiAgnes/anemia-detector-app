@@ -57,5 +57,29 @@ class MLConstants {
   
   /// Número de classes de anemia
   static const int numAnemiaClasses = 4;
+
+  /// Converte a classificação de anemia para um valor numérico (score)
+  /// 
+  /// Valores:
+  /// - Normal: 100 (saudável)
+  /// - Leve: 60 (limítrofe)
+  /// - Moderada: 30 (anêmico)
+  /// - Grave: 10 (anêmico grave)
+  static double classificationToScore(String? classification) {
+    if (classification == null) return 0.0;
+    
+    switch (classification) {
+      case 'Normal':
+        return 100.0;
+      case 'Leve':
+        return 60.0;
+      case 'Moderada':
+        return 30.0;
+      case 'Grave':
+        return 10.0;
+      default:
+        return 0.0;
+    }
+  }
 }
 

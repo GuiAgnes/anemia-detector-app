@@ -130,7 +130,7 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
             ),
             pw.SizedBox(height: 20),
             pw.Text(
-              'Evolução do Score de Anemia',
+              'Evolução da Classificação de Anemia',
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
             pw.Container(
@@ -175,7 +175,13 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
                     pw.SizedBox(height: 6),
-                    pw.Text('Score: ${analysis.score.toStringAsFixed(2)}%'),
+                    pw.Text(
+                      'Classificação: ${analysis.anemiaClassification ?? "N/A"} (Score: ${analysis.score.toStringAsFixed(0)})',
+                    ),
+                    if (analysis.anemiaClassification != null)
+                      pw.Text(
+                        'Classificação: ${analysis.anemiaClassification}${analysis.classificationConfidence != null ? ' (${(analysis.classificationConfidence! * 100).toStringAsFixed(1)}%)' : ''}',
+                      ),
                     if (analysis.actionTaken != null)
                       pw.Text('Ação: ${analysis.actionTaken}'),
                     if (analysis.notes != null)
@@ -288,6 +294,36 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
         return const Color(0xFFC62828);
       case AnemiaStatus.unknown:
         return Colors.blueGrey;
+    }
+  }
+
+  Color _getClassificationColor(String classification) {
+    switch (classification) {
+      case 'Normal':
+        return const Color(0xFF10B981);
+      case 'Leve':
+        return const Color(0xFFF59E0B);
+      case 'Moderada':
+        return const Color(0xFFEF4444);
+      case 'Grave':
+        return const Color(0xFFDC2626);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getClassificationIcon(String classification) {
+    switch (classification) {
+      case 'Normal':
+        return Icons.check_circle;
+      case 'Leve':
+        return Icons.warning;
+      case 'Moderada':
+        return Icons.error;
+      case 'Grave':
+        return Icons.dangerous;
+      default:
+        return Icons.help;
     }
   }
 
@@ -425,11 +461,42 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                     'Última análise: ${dateTimeFormat.format(lastAnalysis.recordedAt)}',
                   ),
                   Text(
-                    'Score: ${lastAnalysis.score.toStringAsFixed(2)}%',
+                    'Classificação: ${lastAnalysis.anemiaClassification ?? "N/A"} (Score: ${lastAnalysis.score.toStringAsFixed(0)})',
                     style: TextStyle(color: _statusColor(status)),
                   ),
+                  if (lastAnalysis.anemiaClassification != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          _getClassificationIcon(lastAnalysis.anemiaClassification!),
+                          size: 16,
+                          color: _getClassificationColor(lastAnalysis.anemiaClassification!),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Classificação: ${lastAnalysis.anemiaClassification}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: _getClassificationColor(lastAnalysis.anemiaClassification!),
+                          ),
+                        ),
+                        if (lastAnalysis.classificationConfidence != null)
+                          Text(
+                            ' (${(lastAnalysis.classificationConfidence! * 100).toStringAsFixed(1)}%)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                   if (lastAnalysis.actionTaken != null)
-                    Text('Ação: ${lastAnalysis.actionTaken}'),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text('Ação: ${lastAnalysis.actionTaken}'),
+                    ),
                 ],
               )
             else
@@ -506,8 +573,16 @@ class _AnimalDetailPageState extends State<AnimalDetailPage> {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 40,
+                    reservedSize: 50,
                     interval: 20,
+                    getTitlesWidget: (value, meta) {
+                      // Mapeia valores do score para labels de classificação
+                      if (value == 100) return const Text('Normal', style: TextStyle(fontSize: 10));
+                      if (value == 60) return const Text('Leve', style: TextStyle(fontSize: 10));
+                      if (value == 30) return const Text('Moderada', style: TextStyle(fontSize: 10));
+                      if (value == 10) return const Text('Grave', style: TextStyle(fontSize: 10));
+                      return Text(value.toInt().toString(), style: const TextStyle(fontSize: 10));
+                    },
                   ),
                 ),
                 topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -555,6 +630,36 @@ class _AnalysisHistoryCard extends StatelessWidget {
 
   final AnalysisModel analysis;
 
+  static Color _getClassificationColor(String classification) {
+    switch (classification) {
+      case 'Normal':
+        return const Color(0xFF10B981);
+      case 'Leve':
+        return const Color(0xFFF59E0B);
+      case 'Moderada':
+        return const Color(0xFFEF4444);
+      case 'Grave':
+        return const Color(0xFFDC2626);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  static IconData _getClassificationIcon(String classification) {
+    switch (classification) {
+      case 'Normal':
+        return Icons.check_circle;
+      case 'Leve':
+        return Icons.warning;
+      case 'Moderada':
+        return Icons.error;
+      case 'Grave':
+        return Icons.dangerous;
+      default:
+        return Icons.help;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
@@ -599,10 +704,49 @@ class _AnalysisHistoryCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text('${analysis.score.toStringAsFixed(2)}%'),
+                Text(
+                  analysis.anemiaClassification != null
+                      ? analysis.anemiaClassification!
+                      : 'Score: ${analysis.score.toStringAsFixed(0)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: analysis.anemiaClassification != null
+                        ? _getClassificationColor(analysis.anemiaClassification!)
+                        : null,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
+            if (analysis.anemiaClassification != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    Icon(
+                      _getClassificationIcon(analysis.anemiaClassification!),
+                      size: 16,
+                      color: _getClassificationColor(analysis.anemiaClassification!),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Classificação: ${analysis.anemiaClassification}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: _getClassificationColor(analysis.anemiaClassification!),
+                      ),
+                    ),
+                    if (analysis.classificationConfidence != null)
+                      Text(
+                        ' (${(analysis.classificationConfidence! * 100).toStringAsFixed(1)}%)',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             if (analysis.actionTaken != null)
               Text('Ação tomada: ${analysis.actionTaken}'),
             if (analysis.notes != null)

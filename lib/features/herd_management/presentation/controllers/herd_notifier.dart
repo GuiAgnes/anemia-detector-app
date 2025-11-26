@@ -15,8 +15,8 @@ class HerdNotifier extends ChangeNotifier {
     required AnimalRepository animalRepository,
     required AnalysisRepository analysisRepository,
     this.reminderThresholdDays = 30,
-    this.healthyThreshold = 70.0,
-    this.borderlineThreshold = 50.0,
+    this.healthyThreshold = 80.0, // Ajustado para refletir classificação (Normal = 100)
+    this.borderlineThreshold = 45.0, // Ajustado para refletir classificação (Leve = 60)
   })  : _animalRepository = animalRepository,
         _analysisRepository = analysisRepository;
 

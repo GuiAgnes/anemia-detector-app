@@ -22,38 +22,48 @@ const AnalysisModelSchema = CollectionSchema(
       name: r'actionTaken',
       type: IsarType.string,
     ),
-    r'animalId': PropertySchema(
+    r'anemiaClassification': PropertySchema(
       id: 1,
+      name: r'anemiaClassification',
+      type: IsarType.string,
+    ),
+    r'animalId': PropertySchema(
+      id: 2,
       name: r'animalId',
       type: IsarType.long,
     ),
+    r'classificationConfidence': PropertySchema(
+      id: 3,
+      name: r'classificationConfidence',
+      type: IsarType.double,
+    ),
     r'createdAt': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
     r'notes': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'notes',
       type: IsarType.string,
     ),
     r'originalImagePath': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'originalImagePath',
       type: IsarType.string,
     ),
     r'recordedAt': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'recordedAt',
       type: IsarType.dateTime,
     ),
     r'score': PropertySchema(
-      id: 6,
+      id: 8,
       name: r'score',
       type: IsarType.double,
     ),
     r'segmentedImagePath': PropertySchema(
-      id: 7,
+      id: 9,
       name: r'segmentedImagePath',
       type: IsarType.string,
     )
@@ -112,6 +122,12 @@ int _analysisModelEstimateSize(
     }
   }
   {
+    final value = object.anemiaClassification;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.notes;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -129,13 +145,15 @@ void _analysisModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.actionTaken);
-  writer.writeLong(offsets[1], object.animalId);
-  writer.writeDateTime(offsets[2], object.createdAt);
-  writer.writeString(offsets[3], object.notes);
-  writer.writeString(offsets[4], object.originalImagePath);
-  writer.writeDateTime(offsets[5], object.recordedAt);
-  writer.writeDouble(offsets[6], object.score);
-  writer.writeString(offsets[7], object.segmentedImagePath);
+  writer.writeString(offsets[1], object.anemiaClassification);
+  writer.writeLong(offsets[2], object.animalId);
+  writer.writeDouble(offsets[3], object.classificationConfidence);
+  writer.writeDateTime(offsets[4], object.createdAt);
+  writer.writeString(offsets[5], object.notes);
+  writer.writeString(offsets[6], object.originalImagePath);
+  writer.writeDateTime(offsets[7], object.recordedAt);
+  writer.writeDouble(offsets[8], object.score);
+  writer.writeString(offsets[9], object.segmentedImagePath);
 }
 
 AnalysisModel _analysisModelDeserialize(
@@ -146,14 +164,16 @@ AnalysisModel _analysisModelDeserialize(
 ) {
   final object = AnalysisModel(
     actionTaken: reader.readStringOrNull(offsets[0]),
-    animalId: reader.readLong(offsets[1]),
-    notes: reader.readStringOrNull(offsets[3]),
-    originalImagePath: reader.readString(offsets[4]),
-    recordedAt: reader.readDateTime(offsets[5]),
-    score: reader.readDouble(offsets[6]),
-    segmentedImagePath: reader.readString(offsets[7]),
+    anemiaClassification: reader.readStringOrNull(offsets[1]),
+    animalId: reader.readLong(offsets[2]),
+    classificationConfidence: reader.readDoubleOrNull(offsets[3]),
+    notes: reader.readStringOrNull(offsets[5]),
+    originalImagePath: reader.readString(offsets[6]),
+    recordedAt: reader.readDateTime(offsets[7]),
+    score: reader.readDouble(offsets[8]),
+    segmentedImagePath: reader.readString(offsets[9]),
   );
-  object.createdAt = reader.readDateTime(offsets[2]);
+  object.createdAt = reader.readDateTime(offsets[4]);
   object.id = id;
   return object;
 }
@@ -168,18 +188,22 @@ P _analysisModelDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readLong(offset)) as P;
-    case 2:
-      return (reader.readDateTime(offset)) as P;
-    case 3:
       return (reader.readStringOrNull(offset)) as P;
+    case 2:
+      return (reader.readLong(offset)) as P;
+    case 3:
+      return (reader.readDoubleOrNull(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
-    case 5:
       return (reader.readDateTime(offset)) as P;
+    case 5:
+      return (reader.readStringOrNull(offset)) as P;
     case 6:
-      return (reader.readDouble(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 7:
+      return (reader.readDateTime(offset)) as P;
+    case 8:
+      return (reader.readDouble(offset)) as P;
+    case 9:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -638,6 +662,160 @@ extension AnalysisModelQueryFilter
   }
 
   QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'anemiaClassification',
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'anemiaClassification',
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'anemiaClassification',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'anemiaClassification',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'anemiaClassification',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'anemiaClassification',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'anemiaClassification',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'anemiaClassification',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'anemiaClassification',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'anemiaClassification',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'anemiaClassification',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      anemiaClassificationIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'anemiaClassification',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
       animalIdEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -689,6 +867,90 @@ extension AnalysisModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      classificationConfidenceIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'classificationConfidence',
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      classificationConfidenceIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'classificationConfidence',
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      classificationConfidenceEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'classificationConfidence',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      classificationConfidenceGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'classificationConfidence',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      classificationConfidenceLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'classificationConfidence',
+        value: value,
+        epsilon: epsilon,
+      ));
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterFilterCondition>
+      classificationConfidenceBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'classificationConfidence',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        epsilon: epsilon,
       ));
     });
   }
@@ -1373,6 +1635,20 @@ extension AnalysisModelQuerySortBy
     });
   }
 
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      sortByAnemiaClassification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'anemiaClassification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      sortByAnemiaClassificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'anemiaClassification', Sort.desc);
+    });
+  }
+
   QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy> sortByAnimalId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'animalId', Sort.asc);
@@ -1383,6 +1659,20 @@ extension AnalysisModelQuerySortBy
       sortByAnimalIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'animalId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      sortByClassificationConfidence() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'classificationConfidence', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      sortByClassificationConfidenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'classificationConfidence', Sort.desc);
     });
   }
 
@@ -1480,6 +1770,20 @@ extension AnalysisModelQuerySortThenBy
     });
   }
 
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      thenByAnemiaClassification() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'anemiaClassification', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      thenByAnemiaClassificationDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'anemiaClassification', Sort.desc);
+    });
+  }
+
   QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy> thenByAnimalId() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'animalId', Sort.asc);
@@ -1490,6 +1794,20 @@ extension AnalysisModelQuerySortThenBy
       thenByAnimalIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'animalId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      thenByClassificationConfidence() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'classificationConfidence', Sort.asc);
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QAfterSortBy>
+      thenByClassificationConfidenceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'classificationConfidence', Sort.desc);
     });
   }
 
@@ -1593,9 +1911,24 @@ extension AnalysisModelQueryWhereDistinct
     });
   }
 
+  QueryBuilder<AnalysisModel, AnalysisModel, QDistinct>
+      distinctByAnemiaClassification({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'anemiaClassification',
+          caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<AnalysisModel, AnalysisModel, QDistinct> distinctByAnimalId() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'animalId');
+    });
+  }
+
+  QueryBuilder<AnalysisModel, AnalysisModel, QDistinct>
+      distinctByClassificationConfidence() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'classificationConfidence');
     });
   }
 
@@ -1655,9 +1988,23 @@ extension AnalysisModelQueryProperty
     });
   }
 
+  QueryBuilder<AnalysisModel, String?, QQueryOperations>
+      anemiaClassificationProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'anemiaClassification');
+    });
+  }
+
   QueryBuilder<AnalysisModel, int, QQueryOperations> animalIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'animalId');
+    });
+  }
+
+  QueryBuilder<AnalysisModel, double?, QQueryOperations>
+      classificationConfidenceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'classificationConfidence');
     });
   }
 
