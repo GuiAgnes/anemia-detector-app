@@ -10,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/exceptions/ml_exceptions.dart';
+import '../../../../core/ml/classification_service.dart';
+import '../../../../core/ml/image_processor.dart';
 import '../../../../core/ml/image_processor_isolate.dart';
 import '../../../../core/ml/tflite_service.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -21,6 +23,7 @@ import '../../../herd_management/data/models/animal_model.dart';
 import '../../../herd_management/data/repositories/analysis_repository.dart';
 import '../../../herd_management/presentation/controllers/herd_notifier.dart';
 import '../../../herd_management/presentation/widgets/save_analysis_bottom_sheet.dart';
+import '../widgets/classification_result_widget.dart';
 import '../widgets/segmentation_results_widget.dart';
 import '../widgets/stats_card.dart';
 import 'camera_guide_page.dart';
@@ -37,12 +40,14 @@ class AnalysisCapturePage extends StatefulWidget {
 
 class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
   final TFLiteService _mlService = TFLiteService();
+  final ClassificationService _classificationService = ClassificationService();
   bool _isProcessing = false;
   bool _isSaving = false;
 
   File? _analyzedImage;
   Uint8List? _segmentationMask;
   double? _coveragePercentage;
+  ClassificationResult? _classificationResult;
 
   String? _errorMessage;
 
@@ -54,7 +59,11 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
 
   Future<void> _loadModel() async {
     try {
-      await _mlService.loadModel();
+      // Carrega ambos os modelos
+      await Future.wait([
+        _mlService.loadModel(),
+        _classificationService.loadModel(),
+      ]);
       if (!mounted) return;
       setState(() {
         _errorMessage = null;
@@ -69,8 +78,8 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
   }
 
   Future<void> pickImage() async {
-    if (!_mlService.isLoaded) {
-      _showError('Modelo ainda não foi carregado. Aguarde...');
+    if (!_mlService.isLoaded || !_classificationService.isLoaded) {
+      _showError('Modelos ainda não foram carregados. Aguarde...');
       return;
     }
 
@@ -200,6 +209,7 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
       _analyzedImage = imageFile;
       _segmentationMask = null;
       _coveragePercentage = null;
+      _classificationResult = null;
     });
 
     try {
@@ -214,9 +224,41 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
 
       if (!mounted) return;
 
+      // Executa classificação após segmentação bem-sucedida
+      ClassificationResult? classificationResult;
+      try {
+        // Lê a imagem original
+        final imageBytes = await imageFile.readAsBytes();
+        final decodedImage = img.decodeImage(imageBytes);
+        
+        if (decodedImage != null) {
+          // Extrai a região segmentada
+          final segmentedRegion = ImageProcessor.extractSegmentedRegion(
+            decodedImage,
+            statistics.mask,
+          );
+          
+          // Pré-processa para classificação
+          final classificationTensor = ImageProcessor.preprocessForClassification(
+            segmentedRegion,
+          );
+          
+          // Executa classificação
+          classificationResult = await _classificationService.runClassification(
+            classificationTensor,
+          );
+        }
+      } catch (e) {
+        debugPrint('Erro ao executar classificação: $e');
+        // Não falha o processo se a classificação falhar
+      }
+
+      if (!mounted) return;
+
       setState(() {
         _segmentationMask = statistics.mask;
         _coveragePercentage = statistics.coveragePercentage;
+        _classificationResult = classificationResult;
         _isProcessing = false;
       });
     } catch (e, stackTrace) {
@@ -234,6 +276,7 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
         _isProcessing = false;
         _segmentationMask = null;
         _coveragePercentage = null;
+        _classificationResult = null;
       });
 
       _showError(errorMessage);
@@ -289,6 +332,8 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
         segmentedImagePath: savedPaths.segmented,
         actionTaken: request.actionTaken,
         notes: request.notes,
+        anemiaClassification: _classificationResult?.predictedClass,
+        classificationConfidence: _classificationResult?.confidence,
       );
 
       if (!context.mounted) return;
@@ -390,6 +435,7 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
   @override
   void dispose() {
     _mlService.dispose();
+    _classificationService.dispose();
     super.dispose();
   }
 
@@ -506,6 +552,10 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
                         child: Column(
                           children: [
                             _buildSegmentationResults(),
+                            if (_classificationResult != null) ...[
+                              const SizedBox(height: 24),
+                              _buildClassificationResults(),
+                            ],
                             const SizedBox(height: 16),
                             GradientButton(
                               text: 'Salvar análise',
@@ -558,20 +608,22 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
   }
 
   Widget _buildModelStatus() {
+    final bothLoaded = _mlService.isLoaded && _classificationService.isLoaded;
+    
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: _mlService.isLoaded
+            color: bothLoaded
                 ? AppTheme.accentColor.withOpacity(0.1)
                 : AppTheme.errorColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            _mlService.isLoaded ? Icons.check_circle : Icons.error,
+            bothLoaded ? Icons.check_circle : Icons.error,
             color:
-                _mlService.isLoaded ? AppTheme.accentColor : AppTheme.errorColor,
+                bothLoaded ? AppTheme.accentColor : AppTheme.errorColor,
             size: 24,
           ),
         ),
@@ -581,9 +633,9 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _mlService.isLoaded
-                    ? 'Modelo Carregado'
-                    : 'Modelo Não Carregado',
+                bothLoaded
+                    ? 'Modelos Carregados'
+                    : 'Modelos Não Carregados',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -592,7 +644,7 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
               ),
               const SizedBox(height: 4),
               Text(
-                _mlService.isLoaded
+                bothLoaded
                     ? 'Pronto para análise'
                     : 'Aguardando carregamento...',
                 style: TextStyle(
@@ -688,6 +740,16 @@ class _AnalysisCapturePageState extends State<AnalysisCapturePage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildClassificationResults() {
+    if (_classificationResult == null) {
+      return const SizedBox.shrink();
+    }
+
+    return ClassificationResultWidget(
+      result: _classificationResult!,
     );
   }
 }

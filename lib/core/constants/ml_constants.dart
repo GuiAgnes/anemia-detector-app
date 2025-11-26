@@ -37,5 +37,25 @@ class MLConstants {
   /// Se a cobertura for menor que este valor, a segmentação é considerada inválida
   /// Valor reduzido para 0.1% para evitar rejeitar segmentações válidas
   static const double minCoveragePercentage = 0.1; // 0.1% de cobertura mínima
+
+  // --- Constantes de Classificação de Coloração ---
+  
+  /// Caminho do modelo de classificação de coloração
+  static const String classificationModelPath = 'anemia_model_final.tflite';
+  
+  /// Tamanho da imagem de entrada para classificação (EfficientNetB0)
+  static const int classificationInputSize = 224;
+  
+  /// Shape do input do modelo de classificação: [batch, height, width, channels]
+  static const List<int> classificationInputShape = [1, 224, 224, 3];
+  
+  /// Shape do output do modelo de classificação: [batch, num_classes]
+  static const List<int> classificationOutputShape = [1, 4];
+  
+  /// Classes de classificação de anemia
+  static const List<String> anemiaClasses = ['Normal', 'Leve', 'Moderada', 'Grave'];
+  
+  /// Número de classes de anemia
+  static const int numAnemiaClasses = 4;
 }
 

@@ -45,6 +45,7 @@ flutter:
   
   assets:
     - assets/model.tflite
+    - anemia_model_final.tflite
     - assets/images/logo_unisc.jpg
     - assets/images/examples/
 

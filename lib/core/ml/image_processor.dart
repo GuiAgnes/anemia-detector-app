@@ -211,6 +211,86 @@ class ImageProcessor {
       totalPixels: totalPixels,
     );
   }
+
+  /// Extrai a região segmentada da imagem usando a máscara
+  /// 
+  /// Retorna uma nova imagem contendo apenas os pixels onde a máscara é > 0
+  /// A imagem de entrada deve ter o mesmo tamanho da máscara (256x256)
+  static img.Image extractSegmentedRegion(
+    img.Image image,
+    Uint8List segmentationMask,
+  ) {
+    // Garante que a imagem tem o tamanho correto
+    final resizedImage = img.copyResize(
+      image,
+      width: MLConstants.inputSize,
+      height: MLConstants.inputSize,
+    );
+
+    // Cria uma nova imagem para a região segmentada
+    final segmentedImage = img.Image(
+      width: MLConstants.inputSize,
+      height: MLConstants.inputSize,
+    );
+
+    // Copia apenas os pixels onde a máscara é > 0
+    for (int y = 0; y < MLConstants.inputSize; y++) {
+      for (int x = 0; x < MLConstants.inputSize; x++) {
+        final index = y * MLConstants.inputSize + x;
+        final maskValue = segmentationMask[index];
+        
+        if (maskValue > 0) {
+          // Copia o pixel da imagem original
+          final pixel = resizedImage.getPixel(x, y);
+          segmentedImage.setPixel(x, y, pixel);
+        } else {
+          // Define como preto (ou transparente) para pixels não segmentados
+          segmentedImage.setPixelRgba(x, y, 0, 0, 0, 0);
+        }
+      }
+    }
+
+    return segmentedImage;
+  }
+
+  /// Pré-processa uma imagem para classificação
+  /// 
+  /// Redimensiona para 224x224 e normaliza valores para [0, 1]
+  /// Retorna um tensor Float32List com shape [224, 224, 3]
+  static Float32List preprocessForClassification(img.Image image) {
+    // Redimensiona para o tamanho de entrada da classificação
+    final resizedImage = img.copyResize(
+      image,
+      width: MLConstants.classificationInputSize,
+      height: MLConstants.classificationInputSize,
+    );
+
+    // Converte para tensor normalizado [0, 1]
+    final int imageSize = MLConstants.classificationInputSize *
+        MLConstants.classificationInputSize *
+        MLConstants.rgbChannels;
+    final Float32List tensor = Float32List(imageSize);
+
+    int index = 0;
+    for (int y = 0; y < MLConstants.classificationInputSize; y++) {
+      for (int x = 0; x < MLConstants.classificationInputSize; x++) {
+        final pixel = resizedImage.getPixel(x, y);
+        
+        // Normaliza para [0, 1] dividindo por 255.0
+        // Conforme o treinamento usa rescale=1./255.
+        final r = pixel.r / 255.0;
+        final g = pixel.g / 255.0;
+        final b = pixel.b / 255.0;
+        
+        // Armazena no formato RGB
+        tensor[index++] = r;
+        tensor[index++] = g;
+        tensor[index++] = b;
+      }
+    }
+
+    return tensor;
+  }
 }
 
 /// Estatísticas da segmentação

@@ -12,6 +12,8 @@ class AnalysisModel {
     required this.segmentedImagePath,
     this.actionTaken,
     this.notes,
+    this.anemiaClassification,
+    this.classificationConfidence,
   }) {
     createdAt = DateTime.now().toUtc();
   }
@@ -31,6 +33,12 @@ class AnalysisModel {
 
   String? actionTaken;
   String? notes;
+
+  /// Classificação de anemia: 'Normal', 'Leve', 'Moderada', 'Grave'
+  String? anemiaClassification;
+
+  /// Confiança da classificação (0.0 a 1.0)
+  double? classificationConfidence;
 
   late DateTime createdAt;
 }

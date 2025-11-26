@@ -1,0 +1,442 @@
+
+UNIVERSIDADE DE SANTA CRUZ DO SUL
+DEPARTAMENTO DE ENGENHARIAS, ARQUITETURA E COMPUTAÇÃO
+CURSO DE ENGENHARIA DE COMPUTAÇÃO 
+
+
+
+
+
+
+
+
+Guilherme Agnes
+
+
+
+
+
+
+
+
+
+
+
+DESENVOLVIMENTO DE UM SISTEMA INTELIGENTE DE DIAGNÓSTICO DE ANEMIA EM OVINOS PARA O TRATAMENTO SELETIVO COM ANTIPARASITÁRIOS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Santa Cruz do Sul
+ 2025
+
+
+Guilherme Agnes
+
+
+
+
+
+
+
+
+DESENVOLVIMENTO DE UM SISTEMA INTELIGENTE DE DIAGNÓSTICO DE ANEMIA EM OVINOS PARA O TRATAMENTO SELETIVO COM ANTIPARASITÁRIOS
+
+
+
+
+
+
+
+
+
+
+Trabalho de Conclusão apresentado ao Curso de Engenharia de Computação da Universidade de Santa Cruz do Sul para obtenção do título de Engenheiro de Computação. 
+
+
+Orientadora: Profª. Dra. Rejane Frozza
+Colaborador: Prof. Dr. Diego Prado de Vargas
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Santa Cruz do Sul
+2025
+
+
+
+RESUMO
+
+       A ovinocultura representa uma atividade econômica de grande relevância, porém, enfrenta desafios sanitários significativos como a anemia parasitária, que acarreta expressivas perdas produtivas. Os métodos de diagnóstico para esta condição variam em precisão e praticidade. O exame de hematócrito, embora preciso, é um método invasivo, de custo elevado e que demanda análise laboratorial. Por outro lado, o método FAMACHA(c), apesar de ser uma ferramenta de campo prática e não invasiva, apresenta uma subjetividade considerável, com resultados que dependem diretamente da experiência e da calibração visual do avaliador. Diante deste cenário, o objetivo deste trabalho é desenvolver um modelo de aprendizado de máquina, baseado em visão computacional, para auxiliar no diagnóstico da anemia em ovinos de forma não invasiva e objetiva, correlacionando a coloração da mucosa ocular conjuntiva com os valores de hematócrito. Para isso, a metodologia de natureza aplicada combinou uma abordagem exploratória e descritiva, incluindo: revisão de literatura sobre anemia ovina e inteligência artificial; coleta de dados primários em campo, consistindo em imagens da conjuntiva ocular e seus respectivos valores de hematócrito; e o desenvolvimento e treinamento de um modelo de aprendizado de máquina. [1]Os resultados obtidos demonstram uma forte correlação entre a análise de cor realizada pelo sistema e os dados de hematócrito, com o modelo alcançando uma acurácia de [PORCENTAGEM] na classificação dos níveis de anemia. A ferramenta desenvolvida prova ser um método de triagem promissor, oferecendo uma alternativa rápida, de baixo custo, não invasiva e objetiva para otimizar o manejo sanitário na ovinocultura.
+
+
+Palavras chaves: Anemia Ovina, Hematócrito, FAMACHA, Visão Computacional, Aprendizado de Máquina.
+
+
+
+ABSTRACT
+
+      Sheep farming is a highly relevant economic activity, however, it faces significant health challenges such as parasitic anemia, which leads to substantial production losses. Diagnostic methods for this condition vary in accuracy and practicality. The hematocrit test, while accurate, is an invasive, costly method that requires laboratory analysis. On the other hand, the FAMACHA(c) method, despite being a practical and non-invasive field tool, presents considerable subjectivity, with results that directly depend on the evaluator's experience and visual calibration. In this context, the objective of this work is to develop a machine learning model, based on computer vision, to assist in the diagnosis of anemia in sheep in a non-invasive and objective manner, by correlating the color of the ocular conjunctival mucosa with hematocrit values. To achieve this, the applied research methodology combined an exploratory and descriptive approach, including: a literature review on ovine anemia and artificial intelligence; collection of primary data in the field, consisting of images of the ocular conjunctiva and their respective hematocrit values; and the development and training of a machine learning model. The results obtained demonstrate a strong correlation between the color analysis performed by the system and the hematocrit data, with the model achieving an accuracy of [PORCENTAGEM] in classifying anemia levels. The developed tool proves to be a promising screening method, offering a fast, low-cost, non-invasive, and objective alternative to optimize health management in sheep farming 3.
+
+
+
+Keywords: Ovine Anemia, Hematocrit, FAMACHA, Computer Vision, Machine Learning.
+
+
+LISTA DE ILUSTRAÇÕES
+
+
+
+
+LISTA DE TABELAS
+
+
+
+
+
+LISTA DE ABREVIAÇÕES
+
+
+
+
+SUMÁRIO
+
+1. INTRODUÇÃO	9
+ 1.1. Justificativas	10
+1.2. Objetivos	11
+1.3. Organização do texto	12
+2. FUNDAMENTAÇÃO TEÓRICA	13
+2.1. Zootecnia de Precisão (Pecuária 4.0)	13
+2.2. Anemia na Ovinocultura	13
+2.3. Métodos de Diagnóstico de Anemia	14
+2.4. Visão Computacional	15
+2.5. Aprendizado de Máquina (Machine Learning)	15
+2.6. Redes Neurais Convolucionais	16
+2.7. Métricas de Avaliação de Modelos	17
+2.7.1. Métricas de Avaliação de Modelos	17
+2.7.1. Métricas de Classificação	17
+2.8. Tecnologias de Prototipagem de Aplicações	18
+2.9. Considerações do Capítulo	18
+3. METODOLOGIA	20
+3.1 Caracterização da pesquisa	20
+3.2 Bibliometria Quantitativa	20
+3.3 Bibliometria Qualitativa	22
+3.3.1 Image analysis to automatically classify anemia based on Famacha score in sheep using ocular conjunctiva images	23
+3.3.2 Detection of anemic sheep using ocular conjunctiva images and deep learning algorithms	24
+3.3.3 SheepEye: a based-web app for real-time diagnosis of sheep anemia	25
+3.4 Análise comparativa	26
+3.4 Procedimentos Metodológicos	28
+4. DESENVOLVIMENTO DO MODELO DE DETECÇÃO	29
+5. CONCLUSÃO	30
+APÊNDICE A	32
+
+
+1. INTRODUÇÃO[2]
+      A ovinocultura é um setor de grande importância socioeconômica no Brasil e no mundo, gerando renda e empregos por meio da produção de carne, lã e laticínios. Contudo, a produtividade dos rebanhos é constantemente ameaçada por desafios sanitários, com destaque para a gastroenterite parasitária. Dentre os agentes causadores, o nematoide Haemonchus contortus é considerado um dos patógenos de maior relevância, sendo responsável por quadros severos de anemia que podem levar a perdas produtivas expressivas e até à morte dos animais, gerando prejuízos econômicos significativos para os produtores (Molento et al., 2004). O controle dessa parasitose depende de um diagnóstico preciso para orientar as estratégias de manejo e tratamento.
+      Atualmente, o diagnóstico da anemia em ovinos se baseia em duas abordagens principais. O método laboratorial padrão-ouro é a determinação do volume globular ou hematócrito, que oferece alta precisão, mas é invasivo, requer coleta de sangue, tem um custo relativamente alto e depende de infraestrutura laboratorial, o que o torna pouco prático para o monitoramento contínuo no campo. Como alternativa, foi desenvolvido o método FAMACHA(c), que consiste na avaliação visual da coloração da mucosa ocular conjuntiva para estimar o grau de anemia. Embora seja uma ferramenta prática e de baixo custo que revolucionou o manejo parasitário, sua principal limitação é a subjetividade. A precisão do método depende da acuidade visual, da experiência do avaliador e das condições de iluminação, o que pode levar a inconsistências no diagnóstico (Van Wyk & Reyneke, 2011).
+      O avanço tecnológico e a digitalização de processos, impulsionados pela chamada Agricultura 4.0, têm introduzido novas ferramentas capazes de otimizar o manejo na produção animal. A Inteligência Artificial (IA), especialmente as áreas de Visão Computacional e Aprendizado de Máquina (Machine Learning), surge como uma promissora vertente para a criação de sistemas de apoio à decisão mais precisos e objetivos. Conforme destacam Norton e Tullo (2016), a aplicação de análise de imagens em zootecnia de precisão pode transformar a forma como monitoramos a saúde animal:
+The use of image analysis for monitoring animal-based measures is a key component of Precision Livestock Farming. [...] By providing timely and accurate information on individual animals, it will allow producers to improve their management, with consequent benefits for animal health and welfare, and economic and environmental sustainability." (Norton & Tullo, p. 1, 2016).
+      Nesse contexto, a análise digital de imagens pode superar a subjetividade da avaliação humana. Um sistema baseado em visão computacional é capaz de capturar e quantificar a coloração da mucosa ocular com uma precisão e consistência que o olho humano não consegue replicar, eliminando as variações entre diferentes avaliadores e condições ambientais. Ao treinar um modelo de aprendizado de máquina, com um banco de dados de imagens e seus respectivos valores de hematócrito, é possível criar uma ferramenta que "aprende" a correlacionar a cor da mucosa com o estado anêmico do animal de forma objetiva e automatizada.
+      Este trabalho tem como foco o desenvolvimento de um modelo de aprendizado de máquina, utilizando técnicas de visão computacional, para auxiliar no diagnóstico da anemia em ovinos. A proposta contempla a criação de um sistema que analisa imagens digitais da conjuntiva ocular para estimar o grau de anemia, tendo como referência os valores de hematócrito. Assim, a pesquisa visa validar a viabilidade de uma plataforma digital como uma ferramenta de triagem rápida, de baixo custo, não invasiva e, principalmente, objetiva, para apoiar decisões de manejo e tratamento em rebanhos ovinos.
+     1.1. Justificativas[3]
+      A aplicação de tecnologias digitais na agropecuária, um movimento conhecido como Zootecnia de Precisão (BERCKMANS, 2017) ou Agro 4.0, tem se tornado um pilar para a modernização do setor. O uso de sensores, inteligência artificial e análise de dados em tempo real permite um monitoramento individualizado e mais acurado da saúde e do bem-estar dos animais. A razão para esta crescente digitalização no campo reside na sua capacidade de transformar dados subjetivos em informações objetivas e acionáveis, otimizando o uso de recursos, agilizando a tomada de decisão e, consequentemente, aumentando a sustentabilidade e a eficiência da produção.
+      Como justificativa econômica para o desenvolvimento deste tema, pode-se citar o impacto direto da anemia parasitária na rentabilidade da ovinocultura. A infecção por Haemonchus contortus leva a custos elevados com medicamentos anti-helmínticos, perdas por redução no ganho de peso, queda na produção de lã e leite e, em casos graves, a mortalidade de animais. Uma ferramenta de diagnóstico precoce, de baixo custo e alta precisão, permite um tratamento seletivo e mais eficaz. Isso não apenas reduz os custos diretos com medicamentos, mas também combate o desenvolvimento de resistência parasitária, um problema crescente que ameaça a viabilidade econômica da produção a longo prazo.
+      Do ponto de vista social e de bem-estar animal, o projeto oferece uma alternativa tecnológica acessível, especialmente para pequenos e médios produtores que podem não ter acesso constante a serviços veterinários laboratoriais. Democratizar o acesso a uma ferramenta de diagnóstico eficaz fortalece a agricultura familiar e promove maior resiliência no setor. Adicionalmente, o método proposto é não invasivo, evitando o estresse e o desconforto nos animais associados à coleta de sangue frequente, o que representa um avanço significativo nas práticas de bem-estar animal.
+      A justificativa científica reside na proposição de uma metodologia inovadora para superar as limitações dos métodos diagnósticos atuais. Enquanto o hematócrito é invasivo e o método FAMACHA(c) é comprovadamente subjetivo, a análise por visão computacional oferece um caminho para a padronização e objetividade no diagnóstico da anemia. Este trabalho contribui com a geração de um conjunto de dados valioso (imagens de mucosa correlacionadas a dados de hematócrito) que pode ser utilizado em futuras pesquisas, além de abrir novas frentes de investigação para o uso de inteligência artificial em outras áreas da sanidade animal.
+      Em busca de um desenvolvimento global mais justo e sustentável, a Organização das Nações Unidas (ONU) estabeleceu os Objetivos de Desenvolvimento Sustentável (ODS). Este trabalho alinha-se diretamente a dois deles. Em primeiro lugar, ao ODS 2 (Fome Zero e Agricultura Sustentável), por desenvolver uma tecnologia que aumenta a produtividade e a sustentabilidade da produção de alimentos. Em segundo lugar, ao ODS 9 (Indústria, Inovação e Infraestrutura), por aplicar inovação científica e tecnológica para modernizar uma atividade produtiva fundamental, promovendo uma agropecuária mais eficiente e tecnológica.
+      Sendo assim, o problema de pesquisa do trabalho foi definido: Um modelo computacional baseado em visão computacional é capaz de estimar, de forma precisa e objetiva, o grau de anemia em ovinos a partir da análise de imagens da mucosa ocular conjuntiva?
+1.2. Objetivos[4]
+      O objetivo principal deste trabalho é desenvolver um modelo de aprendizado de máquina, baseado em visão computacional, para auxiliar no diagnóstico não invasivo da anemia em ovinos, utilizando a coloração da mucosa ocular conjuntiva como indicador e correlacionando-a com os valores de hematócrito.
+      Para alcançar este objetivo, os seguintes objetivos específicos foram definidos:
+? Realizar uma revisão bibliográfica aprofundada sobre a anemia em ovinos, os métodos de diagnóstico existentes (hematócrito e FAMACHA(c)) e as técnicas de inteligência artificial aplicadas à análise de imagens.
+? Coletar e estruturar um conjunto de dados (dataset) contendo imagens da mucosa ocular de ovinos e seus respectivos valores de hematócrito, obtidos em ambiente de campo.
+? Desenvolver e treinar um modelo de aprendizado de máquina capaz de extrair características de cor das imagens e correlacioná-las com os níveis de anemia indicados pelo hematócrito.
+? Validar o desempenho do modelo computacional, analisando sua acurácia e capacidade de predição em comparação com os resultados do exame de hematócrito.
+? Propor um protótipo de ferramenta computacional para uso prático por veterinários e produtores.
+1.3. Organização do texto
+      O trabalho está organizado nos seguintes capítulos: o Capítulo 2 contém a fundamentação teórica que dá base ao estudo; o Capítulo 3 apresenta os procedimentos metodológicos definidos para a pesquisa; o Capítulo 4 caracteriza a solução desenvolvida; e, por fim, o Capítulo 5 apresenta a conclusão e os trabalhos futuros.
+
+
+      
+2. FUNDAMENTAÇÃO TEÓRICA[GA5]
+      Neste capítulo, são abordados os conceitos fundamentais que dão suporte a esta pesquisa. Inicia-se pelo contexto da Zootecnia de Precisão, seguindo para o problema central da anemia na ovinocultura e os métodos de diagnóstico atuais. Por fim, são detalhadas as tecnologias de Inteligência Artificial que compõem a solução proposta: Visão Computacional, Processamento de Imagens, Redes Neurais Convolucionais, suas métricas de avaliação e as tecnologias para prototipagem.
+2.1. Zootecnia de Precisão (Pecuária 4.0)
+      A produção animal moderna enfrenta o desafio de aumentar a eficiência e a sustentabilidade, ao mesmo tempo em que garante altos padrões de bem-estar animal. Neste cenário, surge a Zootecnia de Precisão (Pecuária 4.0), que se baseia no uso de tecnologias avançadas para o monitoramento e gerenciamento individualizado dos animais (Berckmans, 2017).
+      Através de sensores, câmeras, Internet das Coisas (IoT) e Inteligência Artificial (IA), a Zootecnia de Precisão permite a coleta de dados em tempo real sobre o comportamento, saúde e estado fisiológico do rebanho. O objetivo é transformar esses dados em informações acionáveis para o produtor. A Visão Computacional, em particular, é uma ferramenta-chave neste contexto, permitindo o monitoramento não invasivo de indicadores de saúde, como o escore de locomoção, o comportamento alimentar e, como proposto neste trabalho, os indicadores de anemia.
+2.2. Anemia na Ovinocultura
+      Dentro dos desafios sanitários da ovinocultura, a gastroenterite parasitária se destaca como uma das principais causas de perdas econômicas. O nematoide Haemonchus contortus, em particular, é o patógeno de maior relevância para pequenos ruminantes. Por ser um parasita hematófago (que se alimenta de sangue), infecções severas causam anemia, levando a perdas de peso, queda na produção e, em casos agudos, a morte de animais.
+      A anemia, por sua vez, provoca uma alteração visível na coloração da mucosa ocular conjuntiva dos ovinos, que muda de um vermelho intenso (em animais saudáveis) para tons de rosa pálido ou até branco em animais severamente anêmicos. Identificar esta anemia de forma rápida e precisa é, portanto, um pilar fundamental para o manejo sanitário e a viabilidade econômica da produção ovina.
+2.3. Métodos de Diagnóstico de Anemia
+      O diagnóstico da anemia em ovinos depende, atualmente, de dois métodos principais que se contrapõem em termos de precisão e praticidade: o exame laboratorial de hematócrito e o método de campo FAMACHA(c).
+      O método laboratorial padrão-ouro é a determinação do volume globular, ou hematócrito (Packed Cell Volume - PCV). Esta técnica consiste em medir a proporção de glóbulos vermelhos no sangue. Embora o PCV seja reconhecido por sua alta precisão, ele apresenta desvantagens significativas para o manejo rotineiro: é um método invasivo (requer coleta de sangue), exige preparação de amostras e análise laboratorial, o que o torna caro e impede um diagnóstico em tempo real no campo.
+      Buscando uma solução mais prática, foi desenvolvido o método FAMACHA(c), que permite a detecção da anemia através da avaliação visual da coloração da mucosa ocular. O avaliador compara a cor da conjuntiva do animal com um cartão-guia que contém cinco tonalidades, de 1 (vermelho, não anêmico) a 5 (branco, anemia severa).
+Figura 1 - Método FAMANHA(c)
+
+Fonte: (Tânia Medeiros, 2020)
+      A Figura X ilustra este cartão, detalhando visualmente a escala de cor que progride do Nível 1 (vermelho intenso), indicando um animal saudável e sem necessidade de tratamento, passando por tons intermediários de laranja e rosa pálido (Níveis 2, 3 e 4), que representam graus crescentes de suspeita ou certeza de anemia, até o Nível 5 (mucosa branca/pálida), que representa anemia severa e exige intervenção imediata.
+      Trata-se de um método fácil e de baixo custo, que possibilita um diagnóstico imediato na fazenda. No entanto, sua principal limitação é a subjetividade. O método é propenso a erros, pois depende da avaliação humana, da experiência do profissional e das condições de iluminação, podendo gerar diagnósticos inconsistentes.
+2.4. Visão Computacional
+      A Visão Computacional é uma área da Inteligência Artificial que busca replicar e automatizar a capacidade da visão humana. Através de algoritmos, ela permite que computadores possam "enxergar", interpretar e extrair significado de imagens ou vídeos (Szeliski, 2010). Aplicada ao diagnóstico de anemia, a análise de imagens pode eliminar a subjetividade humana na avaliação, quantificando a cor de forma objetiva e consistente.
+      O processo de análise de imagem em visão computacional geralmente envolve duas etapas principais: a segmentação da imagem e a extração de características, ambas cruciais para este projeto.
+2.5. Aprendizado de Máquina (Machine Learning)
+      O Aprendizado de Máquina (Machine Learning), um subcampo da IA, refere-se a algoritmos que permitem ao computador "aprender" a partir de dados, em vez de ser explicitamente programado (Russel; Norvig, 2010). No contexto deste trabalho, o modelo de aprendizado de máquina é alimentado com dados de imagens (as características de cor) e os valores de hematócrito (PCV) correspondentes. O objetivo é que o modelo aprenda a complexa relação entre a cor da mucosa e o nível real de anemia.
+      Modelos de aprendizado de máquina clássicos, como o Random Forest (RF), são eficazes para essa tarefa, mas a abordagem mais moderna e poderosa para dados de imagem é o Deep Learning.
+2.6. Redes Neurais Convolucionais
+      O Deep Learning (Aprendizagem Profunda) utiliza Redes Neurais Artificiais com múltiplas camadas para resolver problemas complexos. Para tarefas de imagem, a arquitetura dominante é a Rede Neural Convolucional (CNN).
+      A Figura X ilustra a arquitetura conceitual de uma CNN. As CNNs são projetadas especificamente para processar dados em grade, como uma imagem. Conforme demonstrado na figura, o fluxo de uma CNN se divide em duas etapas principais: a Extração de recursos, onde os padrões visuais da imagem de "Input" (Entrada) são aprendidos, e a classificação, onde esses padrões são interpretados para gerar um "Output" (Saída) probabilístico.
+Figura 2 - Arquitetura de uma Rede Neural Convolucional
+      
+Fonte: traduzida de (IONOS, 2024)
+      As CNNs são projetadas especificamente para processar dados em grade, como uma imagem. Sua arquitetura é inspirada no córtex visual humano e consiste em camadas principais:
+1. Camadas Convolucionais: Atuam como detectores de características. As primeiras camadas aprendem a detectar características simples (linhas, bordas, cores) e as camadas mais profundas aprendem a combinar essas características para detectar padrões complexos (texturas, formas e, eventualmente, a própria conjuntiva ocular).
+2. Camadas de Pooling (Agrupamento): Reduzem o tamanho espacial da imagem, tornando o modelo mais eficiente e ajudando a identificar características independentemente de sua posição exata na imagem.
+3. Camadas Totalmente Conectadas: Após as camadas convolucionais e de pooling extraírem as características, estas camadas finais realizam a tarefa de classificação (ex: "anêmico" vs. "não anêmico") ou regressão (ex: prever o valor "22,5" do PCV).
+      Arquiteturas como a U-net são um tipo especializado de CNN, excelente para segmentação de imagem (isolar a conjuntiva), sendo esta a arquitetura selecionada para esta etapa do projeto. Para a tarefa de classificação e extração de características, serão exploradas e comparadas CNNs clássicas de alto desempenho, como a VGG19, Xception e Inception v3, que foram amplamente validadas na literatura para tarefas de reconhecimento de imagem.
+2.7. Métricas de Avaliação de Modelos
+      Para que um modelo de aprendizado de máquina seja validado cientificamente, é essencial medir seu desempenho com métricas objetivas. A escolha das métricas depende da tarefa do modelo: Regressão ou Classificação.
+2.7.1. Métricas de Avaliação de Modelos
+      Quando o objetivo é prever um valor contínuo (como o valor do hematócrito), usam-se métricas como:
+? R2 (Coeficiente de Determinação): Indica a proporção da variância nos dados de hematócrito que é explicada pelo modelo. Um valor próximo de 1 indica que o modelo faz previsões muito próximas dos valores reais.
+? RMSE (Raiz do Erro Quadrático Médio): Mede o "erro médio" das previsões na mesma unidade do alvo (neste caso, em pontos percentuais de hematócrito). Um RMSE menor indica um modelo mais preciso.
+      Modelos de aprendizado de máquina clássicos, como o Random Forest (RF), são eficazes para essa tarefa, mas a abordagem mais moderna e poderosa para dados de imagem é o Deep Learning.
+2.7.1. Métricas de Classificação
+      Quando o objetivo é categorizar (ex: "anêmico" vs. "não anêmico"), a Acurácia (percentual de acertos) pode ser enganosa, especialmente se houver mais animais saudáveis do que anêmicos. Por isso, usam-se métricas mais robustas:
+? Precisão (Precision): De todos os animais que o modelo classificou como anêmicos, quantos realmente estavam anêmicos? Uma alta precisão evita "falsos positivos" (tratar animais saudáveis).
+? Recall (Sensibilidade): De todos os animais que realmente estavam anêmicos, quantos o modelo conseguiu encontrar? Um alto recall (alta sensibilidade) evita "falsos negativos" (deixar animais doentes sem tratamento).
+? F1-Score: É a média harmônica entre Precisão e Recall. É uma métrica única e robusta que equilibra os dois objetivos, sendo excelente para avaliar o desempenho geral do classificador.
+2.8. Tecnologias de Prototipagem de Aplicações
+      Um dos objetivos deste trabalho é propor um protótipo de ferramenta computacional. Modelos de aprendizado de máquina, por si sós, são códigos complexos. Para que se tornem ferramentas úteis para veterinários e produtores, eles precisam ser embarcados em uma aplicação com uma interface de usuário amigável.
+      A prototipagem rápida de aplicações web é uma abordagem comum para isso. Utilizando frameworks leves em Python, é possível transformar um script de análise de dados em um aplicativo web interativo com poucas linhas de código. Ferramentas como Flask ou Streamlit (citado na bibliometria) são projetadas para este fim. O usuário pode, por exemplo, enviar uma foto pelo navegador do celular, o backend (onde o modelo está hospedado) processa a imagem e retorna o diagnóstico (seja o valor do PCV ou a classificação de anemia) na tela.
+2.9. Considerações do Capítulo
+      Os estudos desta fundamentação teórica demonstram que a anemia em ovinos é um problema produtivo e econômico grave. A literatura também evidencia uma lacuna clara nos métodos de diagnóstico atuais: o hematócrito é preciso, mas invasivo, caro e lento, enquanto o método FAMACHA(c), apesar de prático, é inerentemente subjetivo e propenso a erros.
+      Nesse contexto, as tecnologias da Zootecnia de Precisão surgem como uma solução viável. A Visão Computacional, através do Processamento de Imagens (incluindo a análise de Espaços de Cor como HSV) e técnicas de segmentação (como U-net), permite a coleta de dados objetivos da mucosa ocular. O Aprendizado de Máquina, especificamente as Redes Neurais Convolucionais (CNNs), fornece os meios para analisar esses dados e correlacioná-los com indicadores de anemia.
+      Para validar cientificamente a eficácia desses modelos, métricas de avaliação robustas (como RMSE para regressão e F1-Score para classificação) são necessárias. Por fim, para que esta pesquisa transcenda a teoria, tecnologias de prototipagem (como Streamlit) são essenciais para transformar o modelo treinado em uma ferramenta aplicável no campo.
+
+
+3. METODOLOGIA 
+      Neste capítulo, é descrita a metodologia utilizada para o desenvolvimento da pesquisa, bem como os procedimentos metodológicos adotados para alcançar os objetivos propostos.
+3.1 Caracterização da pesquisa
+      A presente pesquisa é de natureza aplicada, com uma abordagem metodológica de caráter exploratório e descritivo (Gil, 2008).
+      O caráter exploratório se manifesta na realização de uma extensa revisão de literatura para construir o referencial teórico sobre os temas centrais do trabalho: a anemia em ovinos, com foco na sua etiologia e diagnóstico; os métodos de diagnóstico como o hematócrito e o FAMACHA(c); e as técnicas de Inteligência Artificial, especificamente a visão computacional e o aprendizado de máquina (Machine Learning) aplicados à área da saúde animal.
+      Quanto ao caráter descritivo, o estudo envolve a coleta de dados primários para descrever e analisar a correlação entre as variáveis de interesse. Foram coletadas imagens da mucosa ocular conjuntiva de ovinos e seus respectivos valores de hematócrito. A análise quantitativa destes dados buscou validar a relação entre a coloração da mucosa e os indicadores de anemia, descrevendo a eficácia do modelo computacional proposto.
+      O ambiente de pesquisa combinou a pesquisa bibliográfica com a pesquisa de campo. A pesquisa bibliográfica teve foco em artigos científicos das áreas de Medicina Veterinária, Zootecnia e Ciência da Computação, consultados em periódicos e bases de dados acadêmicas. A pesquisa de campo foi realizada em uma propriedade parceira, na qual foram coletados os dados primários (imagens e amostras de sangue) para o desenvolvimento e validação do modelo.
+      Também foi realizada a bibliometria quantitativa, para o levantamento do volume de trabalhos na área, e qualitativa, com a síntese dos trabalhos relacionados mais relevantes para a pesquisa (Araújo, 2006).
+3.2 Bibliometria Quantitativa
+      Para a bibliometria quantitativa, foi realizada uma busca bibliográfica sistemática com o objetivo de mapear a produção científica na interseção dos temas centrais desta pesquisa. A busca foi conduzida nas bases de dados Web of Science, Scopus e IEEE Xplore, no período de 11 a 15 de agosto de 2025, e limitou-se a documentos do tipo "artigo". A estratégia de pesquisa foi estruturada em quatro grupos de termos, combinados com o operador booleano "OR" dentro de cada grupo e "AND" entre os grupos:
+? Inteligência Artificial: "machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence";
+? Anemia: "diagnosis of anemia" OR "anemia" OR "iron deficiency" OR "anemic";
+? Mucosa Ocular: "conjunctival color" OR "conjunctival pallor" OR "ocular mucosa" OR "ocular conjunctiva";
+? Contexto Animal: "animal" OR "sheep" OR "ovine".
+Tabela 1 - Bibliometria Quantitativa
+Web of Science e IEEE e Scopus
+("machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence")
+("diagnosis of anemia" OR "anemia" OR "iron deficiency" OR "anemic")
+("conjunctival color" OR "conjunctival pallor" OR "ocular mucosa" OR "ocular conjunctiva")
+("animal" OR "sheep" OR "ovine")
+
+W
+S
+IE
+W
+S
+IE
+W
+S
+IE
+W
+S
+IE
+("machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence")
+669277
+2179514
+10547
+546
+8240
+2
+7
+46
+0
+5287
+137628
+17
+("diagnosis of anemia" OR "anemia" OR "iron deficiency" OR "anemic")
+-
+-
+-
+31203
+140736
+3
+17
+66
+0
+1036
+27,734
+0
+("conjunctival color" OR "conjunctival pallor" OR "ocular mucosa" OR "ocular conjunctiva")
+-
+-
+-
+-
+-
+-
+63
+237
+0
+16
+104
+0
+("animal" OR "sheep" OR "ovine")
+-
+-
+-
+-
+-
+-
+-
+-
+-
+245768
+1681377
+46
+("machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence") AND ("conjunctival color" OR "conjunctival pallor" OR "ocular mucosa" OR "ocular conjunctiva") AND ("animal" OR "sheep" OR "ovine")
+Web of Science: 3
+IEEE: 0
+Scopus: 13
+("machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence") AND ("diagnosis of anemia" OR "anemia" OR "iron deficiency" OR "anemic") AND ("animal" OR "sheep" OR "ovine")
+Web of Science: 13
+IEEE: 0
+Scopus: 1,247
+("machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence") AND ("diagnosis of anemia" OR "anemia" OR "iron deficiency" OR "anemic") AND ("conjunctival color" OR "conjunctival pallor" OR "ocular mucosa" OR "ocular conjunctiva")
+Web of Science: 7
+IEEE: 0
+Scopus: 39
+("machine learning" OR "neural networks" OR "deep learning" OR "artificial intelligence") AND ("diagnosis of anemia" OR "anemia" OR "iron deficiency" OR "anemic") AND ("conjunctival color" OR "conjunctival pallor" OR "ocular mucosa" OR "ocular conjunctiva") AND ("animal" OR "sheep" OR "ovine")
+Web of Science: 3
+IEEE: 0
+Scopus: 8
+Fonte: Pesquisa realizada entre 11 e 15 de agosto de 2025     
+       [6] A análise demonstrou que, embora existam milhares de publicações envolvendo termos gerais como "machine learning" ou "anemia" de forma isolada, há uma notável escassez de trabalhos que combinem todos os elementos-chave desta pesquisa. Conforme detalhado na Tabela 1, a drástica redução no número de artigos ocorre ao refinar a busca com termos visuais específicos, como "conjunctival color". A interseção final, que representa o exato escopo deste trabalho, revelou um número baixíssimo de publicações, com apenas 8 artigos na Scopus e 3 na Web of Science. Este resultado quantitativo confirma que a aplicação de IA para o diagnóstico de anemia em ovinos pela análise da conjuntiva ocular é um nicho de pesquisa inovador, evidenciando uma clara lacuna na literatura.
+3.3 Bibliometria Qualitativa
+      Nesta seção, são apresentados os três artigos selecionados a partir da pesquisa e análise da bibliometria quantitativa. Para a seleção dos artigos foi utilizado o método PRISMA (Preferred Reporting Items for Systematic Reviews and Meta-Analyses), que é uma abordagem sistemática para a realização de revisões e análises sistemáticas da literatura e meta-análise (Galvão, Pansani e Harrad, 2015). Os critérios de exclusão foram os artigos repetidos, palavras-chave e resumo. Para critério de inclusão foi feita a leitura do artigo completo. A Figura 4 ilustra o processo PRISMA realizado.
+Figura 3 - Fluxograma PRISMA
+
+Fonte: (Autor, 2025)
+
+       As próximas seções apresentam as sínteses dos artigos escolhidos a partir da bibliometria quantitativa[7]. 
+3.3.1 Image analysis to automatically classify anemia based on Famacha score in sheep using ocular conjunctiva images 
+      O artigo de [8][9]Freitas et al. (2023) tem como objetivos principais extrair características de imagens da conjuntiva ocular para classificar automaticamente o escore Famacha em ovinos, comparar a eficácia de dois modelos de classificação, Regressão Logística Multinomial (MLR) e Random Forest (RF), e avaliar a aplicabilidade do melhor modelo em diferentes fazendas. O estudo utilizou um conjunto de dados com 1.156 imagens da conjuntiva ocular de 422 ovinos, coletadas em três fazendas distintas no estado de São Paulo, Brasil. A metodologia consistiu, primeiramente, em um processo de segmentação de imagem com um modelo Random Forest para isolar automaticamente a região de interesse (a conjuntiva ocular). Após a segmentação, foram extraídas as intensidades de cor dos canais RGB (vermelho, verde e azul). Para reduzir a dimensionalidade dos dados, os autores calcularam 11 quantis (1%, 10%, 20%, etc.) de intensidade para cada canal, que foram usados como variáveis explicativas para os modelos de classificação, cujo alvo era prever os escores Famacha de 1 (não anêmico) a 5 (anemia severa). A validação foi realizada de duas formas: uma divisão aleatória dos dados para comparar o desempenho geral dos modelos MLR e RF, e uma validação cruzada do tipo "leave-one-farm-out", onde o modelo era treinado com dados de duas fazendas e testado na fazenda restante para simular uma aplicação em um ambiente novo. Os resultados demonstraram que o modelo Random Forest (RF) apresentou o melhor desempenho em todas as categorias de escore Famacha quando comparado ao MLR. O modelo RF obteve altos valores de sensibilidade para a detecção de animais anêmicos, alcançando 80,9% para o escore 3, 46,2% para o escore 4 e 60% para o escore 5. A precisão para classificar animais não anêmicos também foi superior no modelo RF, com 72,7% para o escore 1 e 62,5% para o escore 2. Conforme esperado, a validação "leave-one-farm-out" apresentou uma qualidade de predição inferior, mas os autores ressaltam que este cenário é mais próximo da realidade de aplicação da tecnologia em novas fazendas. Em conclusão, o estudo demonstrou ser viável prever os escores Famacha de 2 a 4 de forma automática e objetiva por meio da análise de imagens, eliminando a subjetividade da avaliação humana. Os autores destacam o pioneirismo do trabalho, por não haver relatos anteriores do uso combinado de análise de imagem e o modelo RF para esta finalidade. Como limitações, apontam o desbalanceamento do conjunto de dados e sugerem que estudos futuros utilizem um banco de imagens maior e mais balanceado para aumentar a confiabilidade dos modelos. 
+3.3.2 Detection of anemic sheep using ocular conjunctiva images and deep learning algorithms
+      O estudo de [10][11]Freitas et al. (2025) tem como objetivo principal desenvolver um modelo para predizer o volume globular (hematócrito ou PCV) em ovinos a partir de imagens da conjuntiva ocular, propondo uma abordagem quantitativa e em tempo real para o diagnóstico de anemia. Este método é apresentado como uma alternativa objetiva e mais precisa em comparação ao método Famacha, que é qualitativo e sujeito a erros de interpretação humana. A pesquisa foi conduzida com um banco de dados de 3.441 imagens da conjuntiva ocular de 392 ovinos, coletadas com um smartphone em três fazendas. A metodologia foi dividida em duas etapas principais. Primeiro, foi desenvolvido um algoritmo de segmentação de imagem baseado na arquitetura U-net para isolar automaticamente a região da conjuntiva ocular. Para treinar este algoritmo, 480 imagens foram previamente anotadas usando o Segment Anything Model (SAM). Em seguida, as imagens segmentadas e recortadas foram utilizadas como entrada em três arquiteturas de redes neurais profundas (Deep Neural Networks - DNN): VGG19, Inception v3 e Xception. O desempenho desses modelos foi avaliado em duas tarefas distintas: uma de regressão, para prever o valor exato do PCV, e uma de classificação, para categorizar os animais como "anêmicos" (PCV < 27%) ou "não anêmicos" (PCV = 27%). Os resultados mostraram que o modelo de segmentação U-net foi eficaz, alcançando um Intersection over Union (IoU) de 0,68 no conjunto de teste. Na tarefa de regressão, o modelo Xception obteve o melhor desempenho, porém com um coeficiente de determinação (R2) de apenas 0,24, considerado baixo pelos próprios autores. Já na tarefa de classificação, o modelo VGG19 foi superior, alcançando um F1-score de 0,62. Este modelo se destacou pela sua alta capacidade de identificar corretamente os animais que estavam de fato anêmicos (recall de 83%), embora tenha gerado um número considerável de falsos positivos (classificando animais saudáveis como anêmicos). Em conclusão, o artigo demonstra que a abordagem de classificação é mais promissora para aplicação prática no campo do que a de regressão. Embora o modelo VGG19 trate desnecessariamente alguns animais saudáveis, ele falha em detectar apenas uma pequena parcela dos animais doentes (16,9%), o que é crucial para evitar as severas perdas econômicas associadas a animais anêmicos não tratados. O trabalho reforça que a integração de imagens da conjuntiva ocular com algoritmos de deep learning é uma ferramenta inovadora e viável para auxiliar nas decisões de manejo, superando as limitações de subjetividade do método Famacha e otimizando o diagnóstico de anemia em ovinos.
+3.3.3 SheepEye: a based-web app for real-time diagnosis of sheep anemia
+      Neste artigo, Freitas et al. (2024) propõem e descrevem o desenvolvimento de um sistema de monitoramento de anemia em ovinos na forma de um aplicativo web protótipo, denominado SheepEye. O objetivo principal é oferecer uma ferramenta de diagnóstico em tempo real que seja acessível e de fácil utilização para produtores, visando superar as limitações de custo e tempo dos métodos tradicionais, como exames laboratoriais, e a subjetividade do método Famacha. A metodologia do aplicativo é inteiramente baseada em algoritmos de deep learning, implementados na linguagem Python. O sistema utiliza um modelo U-net para realizar a segmentação da imagem, isolando automaticamente a região da conjuntiva ocular, e em seguida aplica um modelo de classificação VGG19 para o diagnóstico. Para simplificar a predição e aumentar a robustez do modelo, os cinco níveis do escore Famacha foram agrupados em duas categorias: "não anêmico" (escores 1 e 2) e "anêmico" (escores 3, 4 e 5). O aplicativo foi desenvolvido utilizando a biblioteca Streamlit, que permite a criação de uma interface web interativa e de fácil implementação. Os modelos de inteligência artificial foram treinados e validados com um conjunto de dados de 3.441 imagens de 392 animais, coletadas em três fazendas brasileiras. O modelo de classificação VGG19, que é o núcleo do diagnóstico no aplicativo, alcançou uma precisão de 0.71, um recall de 0.90, uma acurácia de 0.70 e um F1-score de 0.79. O alto valor de recall indica que o modelo é especialmente eficaz em identificar os animais que estão de fato anêmicos. O artigo conclui que o SheepEye é uma tecnologia promissora para revolucionar o diagnóstico de infecções parasitárias na ovinocultura. Ao permitir que os produtores realizem um diagnóstico rápido (cerca de 5 segundos por imagem) e diretamente no campo usando um smartphone, o aplicativo facilita a implementação do Tratamento Seletivo Direcionado (TST). Esta prática reduz o uso indiscriminado de anti-helmínticos, o que ajuda a minimizar os custos e, crucialmente, a retardar o desenvolvimento de resistência parasitária. Os autores ressaltam que o aplicativo ainda está em fase de protótipo e que trabalhos futuros se concentrarão em aprimorar a acurácia do modelo, aumentando a diversidade do banco de dados com mais raças e condições ambientais.
+3.4 Análise comparativa
+      A Tabela 2 contém um comparativo entre os artigos selecionados para este trabalho, para isto, foram utilizados os seguintes critérios: objetivo, ferramentas técnicas/funcionalidades e principais resultados.
+      
+Tabela 2 - Comparativo dos Trabalhos relacionados[12]
+Artigo
+Objetivo
+Ferramentas
+Técnicas/Funcionalidades
+Principais Resultados
+Freitas et al. (2023)
+Classificar automaticamente o escore Famacha em ovinos usando imagens da conjuntiva ocular e comparar dois modelos de aprendizado de máquina.
+- Smartphone (iPhone 8) 
+- Python (com bibliotecas scikit-image e scikit-learn) 
+- R (com pacotes como caret, randomForest e U-net)
+- Segmentação de Imagem 
+- Extração de características de cor (Quantis RGB) 
+- Machine Learning (Random Forest, Regressão Logística Multinomial) 
+- Classificação do escore Famacha (níveis 1 a 5) 
+- Validação cruzada "leave-one-farm-out"
+- Modelo Random Forest (RF) superior ao MLR
+- Alta sensibilidade (80.9% no Escore 3) e precisão (72.7% no Escore 1)
+- Demonstrou ser viável para classificar escores Famacha (2-4)
+Freitas et al. (2025)
+Desenvolver um modelo para predizer o valor do hematócrito (PCV) em ovinos, usando imagens da conjuntiva ocular e algoritmos de deep learning.
+- Smartphone (iPhone 8) 
+- Segment Anything Model (SAM) para anotação 
+- Python (com Keras e TensorFlow)
+- Deep Learning
+- Segmentação de imagem com U-net
+- Análise de Regressão (predição de PCV) e Classificação (anêmico vs. não anêmico)
+- Modelos de DNN: VGG19, Inception v3, Xception
+-Transfer Learning (com ImageNet)
+- Regressão (prever PCV) teve baixo desempenho (R2 = 0.24)
+- Classificação (Anêmico/Não anêmico) foi mais promissora
+- Modelo VGG19 obteve F1-score de 0.62 e alto recall (83%)
+
+Freitas et al. (2024)
+Propor e descrever um protótipo de aplicativo web (SheepEye) para diagnóstico de anemia em ovinos em tempo real
+- Smartphone
+- Python
+- Biblioteca Streamlit
+- Segment Anything Model (SAM)
+- Web App
+- Diagnóstico em tempo real
+- Segmentação de imagem com U-net
+- Classificação com VGG19
+- Foco no Tratamento Seletivo Direcionado (TST)
+- Protótipo SheepEye (VGG19) alcançou F1-score de 0.79
+- Alto recall (0.90) na classificação binária (Anêmico/Não anêmico)
+- Diagnóstico em tempo real (aprox. 5 segundos)
+
+Este Trabalho
+Desenvolver um modelo de aprendizado de máquina e um protótipo de ferramenta para auxiliar no diagnóstico de anemia em ovinos, correlacionando a cor da mucosa ocular com o hematócrito.
+- Plataforma Própria (Web App)
+- Python (TensorFlow/Keras, OpenCV)
+- Visão Computacional
+- Deep Learning
+- Análise de Regressão (Predição de Hematócrito)
+- Segmentação de Imagem
+- Protótipo de App
+
+         Fonte: (Autores, 2025).
+
+3.4 Procedimentos Metodológicos
+      Em busca de fundamentação para a construção deste trabalho, a primeira etapa consistiu em uma pesquisa bibliográfica aprofundada sobre os temas de pesquisa definidos. O objetivo foi compreender a fisiopatologia da anemia em ovinos, os métodos de diagnóstico vigentes (Hematócrito e FAMACHA(c)) e o estado da arte das técnicas de visão computacional e deep learning aplicadas à saúde animal.
+      Após, foi realizada a bibliometria quantitativa, analisando o volume de estudos com foco similar ao do presente trabalho. Este levantamento levou à elaboração da bibliometria qualitativa, onde foram selecionados, sintetizados e comparados os artigos de maior relevância (Freitas et al., 2023; 2024; 2025), analisando seus objetivos, ferramentas, técnicas e, principalmente, seus resultados.
+      Na terceira etapa, foi realizada a coleta de dados primários e o desenvolvimento do modelo. Esta fase combinou a pesquisa de campo, com a coleta de imagens da mucosa ocular de ovinos e suas respectivas amostras de sangue para análise de hematócrito, com o desenvolvimento técnico. Os dados foram pré-processados, e um modelo U-net foi treinado para a segmentação automática da conjuntiva. Em seguida, os modelos de deep learning (como VGG19, Xception e Inception v3) foram treinados para correlacionar as imagens segmentadas aos valores de hematócrito.
+      Na quarta e última etapa, foi realizada a validação do modelo e o desenvolvimento do protótipo. O desempenho dos modelos treinados foi avaliado utilizando as métricas estatísticas definidas na fundamentação teórica (R2, RMSE, F1-Score) para aferir sua precisão. Por fim, o modelo de melhor desempenho foi integrado a um protótipo de aplicação web, demonstrando a viabilidade prática da solução.
+
+
+4. DESENVOLVIMENTO DO MODELO DE DETECÇÃO 
+
+
+
+5. CONCLUSÃO
+
+
+
+
+REFERÊNCIAS
+
+
+
+
+
+
